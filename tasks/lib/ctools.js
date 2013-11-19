@@ -101,7 +101,8 @@ function writeResults(results, opt_filePath) {
  */
 var Converter = {
   CLOSURE: undefined,  // Conversion is not needed.
-  JSLINT: jslintConverter
+  JSLINT: jslintConverter,
+  MSVS: msvsConverter
 };
 
 
@@ -119,7 +120,18 @@ var CONVERTERS_ROOT_DIR = path.join(__dirname, '..', '..', 'converters');
  * @param {!function} callback Operation callback.
  */
 function jslintConverter(results, callback) {
-  var cmd = path.join(CONVERTERS_ROOT_DIR, 'jslint.py');
+  var cmd = '"' + path.normalize(path.join(CONVERTERS_ROOT_DIR, 'jslint.py')) + '"';
+  var converterProcess = exec(cmd, null, callback);
+  converterProcess.stdin.end(results);
+}
+
+/**
+ * Converts Closure Linter results to MSVS error format.
+ * @param {string} results Closure Linter results string.
+ * @param {!function} callback Operation callback.
+ */
+function msvsConverter(results, callback) {
+  var cmd = '"' + path.normalize(path.join(CONVERTERS_ROOT_DIR, 'msvs.py')) + '"';
   var converterProcess = exec(cmd, null, callback);
   converterProcess.stdin.end(results);
 }
